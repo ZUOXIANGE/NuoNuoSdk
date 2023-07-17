@@ -7,7 +7,7 @@
 ## 安装
 
 ```
-dotnet add package NuoNuoSdk
+dotnet add package NuoNuoOpenSdk
 ```
 
 ## 使用示例
@@ -31,5 +31,4 @@ var stockRes = await _nuoNuoSdk.ExecuteAsync<GetInvoiceStockRequest, GetInvoiceS
 
 ## TODO
 
-1. 根据文档编写更多的请求返回模型
-2. isv支持
+1. isv支持
