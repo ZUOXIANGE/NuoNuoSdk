@@ -29,7 +29,7 @@ public class TestController : ControllerBase
     public async Task<string> Nuonuo()
     {
         //获取token,根据token有效期自行维护缓存
-        var token = await _nuoNuoSdk.GetMerchantToken();
+        var token = await _nuoNuoSdk.GetMerchantTokenAsync();
         _logger.LogInformation("获取token:{token}", token);
         //var token = new MerchantTokenResponse
         //{

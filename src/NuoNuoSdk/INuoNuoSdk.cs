@@ -18,9 +18,23 @@ public interface INuoNuoSdk
     /// </summary>
     /// <param name="options"></param>
     /// <returns></returns>
-    Task<MerchantTokenResponse> GetMerchantToken(NuoNuoOptions options = null);
+    Task<MerchantTokenResponse> GetMerchantTokenAsync(NuoNuoOptions options = null);
 
-    //TODO isv token
+    /// <summary>
+    /// ISV获取accessToken
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="options"></param>
+    /// <returns></returns>
+    Task<IsvTokenResponse> GetIsvTokenAsync(GetIsvTokenRequest request, NuoNuoOptions options = null);
+
+    /// <summary>
+    /// ISV刷新accessToken
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="options"></param>
+    /// <returns></returns>
+    Task<IsvTokenResponse> RefreshIsvTokenAsync(RefreshIsvTokenRequest request, NuoNuoOptions options = null);
 
     /// <summary>
     /// 执行请求

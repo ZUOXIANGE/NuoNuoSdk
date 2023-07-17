@@ -37,7 +37,7 @@ public class NuoNuoSdk : INuoNuoSdk
     /// </summary>
     /// <param name="options"></param>
     /// <returns></returns>
-    public async Task<MerchantTokenResponse> GetMerchantToken(NuoNuoOptions options = null)
+    public async Task<MerchantTokenResponse> GetMerchantTokenAsync(NuoNuoOptions options = null)
     {
         options ??= _options;
         var dic = new Dictionary<string, string>
@@ -48,6 +48,48 @@ public class NuoNuoSdk : INuoNuoSdk
         };
         var data = await PostFormAsync(dic, options);
         return JsonConvert.DeserializeObject<MerchantTokenResponse>(data);
+    }
+
+    /// <summary>
+    /// ISV获取accessToken
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="options"></param>
+    /// <returns></returns>
+    public async Task<IsvTokenResponse> GetIsvTokenAsync(GetIsvTokenRequest request, NuoNuoOptions options = null)
+    {
+        options ??= _options;
+        var dic = new Dictionary<string, string>
+        {
+            { "client_id", options.AppKey },
+            { "client_secret", options.AppSecret },
+            { "redirect_uri", request.RedirectUri },
+            { "code", request.Code },
+            { "taxNum", options.UserTax },
+            { "grant_type", "authorization_code" }
+        };
+        var data = await PostFormAsync(dic, options);
+        return JsonConvert.DeserializeObject<IsvTokenResponse>(data);
+    }
+
+    /// <summary>
+    /// ISV刷新accessToken
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="options"></param>
+    /// <returns></returns>
+    public async Task<IsvTokenResponse> RefreshIsvTokenAsync(RefreshIsvTokenRequest request, NuoNuoOptions options = null)
+    {
+        options ??= _options;
+        var dic = new Dictionary<string, string>
+        {
+            { "refresh_token", request.RefreshToken },
+            { "client_id", request.UserId },
+            { "client_secret", options.AppSecret },
+            { "grant_type", "refresh_token" }
+        };
+        var data = await PostFormAsync(dic, options);
+        return JsonConvert.DeserializeObject<IsvTokenResponse>(data);
     }
 
     /// <summary>

@@ -29,6 +29,3 @@ var stockRes = await _nuoNuoSdk.ExecuteAsync<GetInvoiceStockRequest, GetInvoiceS
 ```
 具体参数使用方法请参考诺诺官方文档,如果缺少对应的参数模型欢迎自行实现然后PR
 
-## TODO
-
-1. isv支持
