@@ -1,5 +1,8 @@
 ﻿namespace NuoNuoSdk.Responses;
 
+/// <summary>
+/// isv token响应
+/// </summary>
 public class IsvTokenResponse
 {
     /// <summary>

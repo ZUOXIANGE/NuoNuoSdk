@@ -1,5 +1,8 @@
 ﻿namespace NuoNuoSdk.Responses;
 
+/// <summary>
+/// 发票作废响应
+/// </summary>
 public class InvoiceCancellationResponse : NuoNuoResponse<InvoiceCancellationDto>
 {
 

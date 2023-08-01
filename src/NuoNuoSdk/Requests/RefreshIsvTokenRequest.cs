@@ -1,5 +1,8 @@
 ﻿namespace NuoNuoSdk.Requests;
 
+/// <summary>
+/// 刷新isv token请求
+/// </summary>
 public class RefreshIsvTokenRequest
 {
     /// <summary>

@@ -1,4 +1,4 @@
-# NuoNuoSdk
+# NuoNuoSdk [![NuoNuoOpenSdk](https://img.shields.io/nuget/v/NuoNuoOpenSdk.svg)](https://www.nuget.org/packages/NuoNuoOpenSdk/)[![NuoNuoOpenSdk](https://img.shields.io/nuget/dt/NuoNuoOpenSdk.svg)](https://www.nuget.org/packages/NuoNuoOpenSdk/)
 
 [诺诺开放平台](https://open.jss.com.cn/)SDK
 

@@ -1,5 +1,8 @@
 ﻿namespace NuoNuoSdk.Requests;
 
+/// <summary>
+/// 获取isv token请求
+/// </summary>
 public class GetIsvTokenRequest
 {
     /// <summary>

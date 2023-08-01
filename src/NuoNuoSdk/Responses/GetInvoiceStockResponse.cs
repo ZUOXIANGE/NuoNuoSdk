@@ -1,5 +1,8 @@
 ﻿namespace NuoNuoSdk.Responses;
 
+/// <summary>
+/// 企业发票余量查询响应
+/// </summary>
 public class GetInvoiceStockResponse : NuoNuoResponse<GetInvoiceStockDto>
 {
 

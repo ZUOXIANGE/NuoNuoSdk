@@ -1,5 +1,8 @@
 ﻿namespace NuoNuoSdk.Responses;
 
+/// <summary>
+/// 请求开具发票响应
+/// </summary>
 public class RequestBillingResponse : NuoNuoResponse<RequestBillingDto>
 {
 

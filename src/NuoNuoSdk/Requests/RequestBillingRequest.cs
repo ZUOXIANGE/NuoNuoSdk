@@ -3,7 +3,7 @@
 namespace NuoNuoSdk.Requests;
 
 /// <summary>
-/// 请求开具发票接口(2.0)
+/// 请求开具发票(2.0)请求
 /// </summary>
 public class RequestBillingRequest : NuoNuoRequest
 {

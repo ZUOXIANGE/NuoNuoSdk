@@ -1,5 +1,8 @@
 ﻿namespace NuoNuoSdk.Responses;
 
+/// <summary>
+/// 商户token响应
+/// </summary>
 public class MerchantTokenResponse
 {
     /// <summary>

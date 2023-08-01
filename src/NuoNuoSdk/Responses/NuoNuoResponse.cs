@@ -35,6 +35,10 @@ public class NuoNuoResponse
 
 }
 
+/// <summary>
+/// 诺诺响应基类(泛型)
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public class NuoNuoResponse<T> : NuoNuoResponse
 {
     /// <summary>
