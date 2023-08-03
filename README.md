@@ -25,7 +25,25 @@ var stockRes = await _nuoNuoSdk.ExecuteAsync<GetInvoiceStockRequest, GetInvoiceS
 {
     AccessToken = token.AccessToken
 });
+//使用默认接口实现
+var stockRes2 = await _nuoNuoSdk.GetInvoiceStockAsync(new GetInvoiceStockRequest
+{
+    AccessToken = token.AccessToken
+});
 
 ```
 具体参数使用方法请参考诺诺官方文档,如果缺少对应的参数模型欢迎自行实现然后PR
+
+### 参数模型生成小技巧
+
+使用ChatGpt帮我们完成
+
+1. 使用咒语
+![使用咒语](./docs/pic/ai1.png)
+
+2. 得到结果
+![得到结果](./docs/pic/ai2.png)
+
+3. 纠正结果
+![纠正结果](./docs/pic/ai3.png)
 

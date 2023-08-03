@@ -3,7 +3,6 @@ using System.Web;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Serialization;
-using NuoNuoSdk.Dtos;
 using NuoNuoSdk.Requests;
 using NuoNuoSdk.Responses;
 
@@ -35,8 +34,8 @@ public class NuoNuoSdk : INuoNuoSdk
     /// <summary>
     /// 获取access_token
     /// </summary>
-    /// <param name="options"></param>
-    /// <returns></returns>
+    /// <param name="options">指定配置</param>
+    /// <returns><see cref="MerchantTokenResponse"/></returns>
     public async Task<MerchantTokenResponse> GetMerchantTokenAsync(NuoNuoOptions options = null)
     {
         options ??= _options;
@@ -53,9 +52,9 @@ public class NuoNuoSdk : INuoNuoSdk
     /// <summary>
     /// ISV获取accessToken
     /// </summary>
-    /// <param name="request"></param>
-    /// <param name="options"></param>
-    /// <returns></returns>
+    /// <param name="request"><see cref="GetIsvTokenRequest"/></param>
+    /// <param name="options">指定配置</param>
+    /// <returns><see cref="IsvTokenResponse"/></returns>
     public async Task<IsvTokenResponse> GetIsvTokenAsync(GetIsvTokenRequest request, NuoNuoOptions options = null)
     {
         options ??= _options;
@@ -75,9 +74,9 @@ public class NuoNuoSdk : INuoNuoSdk
     /// <summary>
     /// ISV刷新accessToken
     /// </summary>
-    /// <param name="request"></param>
-    /// <param name="options"></param>
-    /// <returns></returns>
+    /// <param name="request"><see cref="RefreshIsvTokenRequest"/></param>
+    /// <param name="options">指定配置</param>
+    /// <returns><see cref="IsvTokenResponse"/></returns>
     public async Task<IsvTokenResponse> RefreshIsvTokenAsync(RefreshIsvTokenRequest request, NuoNuoOptions options = null)
     {
         options ??= _options;
@@ -98,10 +97,10 @@ public class NuoNuoSdk : INuoNuoSdk
     /// <typeparam name="TRequest"></typeparam>
     /// <typeparam name="TResponse"></typeparam>
     /// <param name="request"></param>
-    /// <param name="options"></param>
-    /// <param name="canLog"></param>
+    /// <param name="options">指定配置</param>
+    /// <param name="enableLog">是否开启日志记录</param>
     /// <returns></returns>
-    public async Task<TResponse> ExecuteAsync<TRequest, TResponse>(TRequest request, NuoNuoOptions options = null, bool canLog = true)
+    public async Task<TResponse> ExecuteAsync<TRequest, TResponse>(TRequest request, NuoNuoOptions options = null, bool enableLog = true)
         where TRequest : NuoNuoRequest
         where TResponse : NuoNuoResponse
     {
@@ -142,7 +141,7 @@ public class NuoNuoSdk : INuoNuoSdk
         }
 
         HttpContent httpContent = new StringContent(body, Encoding.UTF8, "application/json");
-        if (canLog)
+        if (enableLog)
             _logger.LogInformation("诺诺请求:header: {@header} body: {body}", header, body);
 
         var res = await client.PostAsync(requestUri, httpContent);
@@ -151,7 +150,7 @@ public class NuoNuoSdk : INuoNuoSdk
         {
             throw new HttpRequestException($"诺诺请求异常:{data}");
         }
-        if (canLog)
+        if (enableLog)
             _logger.LogInformation("诺诺返回:{data}", data);
 
         var response = JsonConvert.DeserializeObject<TResponse>(data);

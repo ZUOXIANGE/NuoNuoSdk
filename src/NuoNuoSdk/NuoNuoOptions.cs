@@ -1,4 +1,4 @@
-﻿namespace NuoNuoSdk.Dtos;
+﻿namespace NuoNuoSdk;
 
 public class NuoNuoOptions
 {

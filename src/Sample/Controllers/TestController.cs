@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using NuoNuoSdk;
-using NuoNuoSdk.Dtos;
 using NuoNuoSdk.Requests;
 using NuoNuoSdk.Responses;
 
@@ -41,7 +40,12 @@ public class TestController : ControllerBase
         {
             AccessToken = token.AccessToken
         });
-        _logger.LogInformation("查询余票:{body}", stockRes.Body);
+        //使用默认接口实现
+        var stockRes2 = await _nuoNuoSdk.GetInvoiceStockAsync(new GetInvoiceStockRequest
+        {
+            AccessToken = token.AccessToken
+        });
+        _logger.LogInformation("查询余票:{body} {body2}", stockRes.Body, stockRes2.Body);
 
         //开票
         var billingRes = await _nuoNuoSdk.ExecuteAsync<RequestBillingRequest, RequestBillingResponse>(new RequestBillingRequest

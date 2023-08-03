@@ -1,6 +1,4 @@
-﻿using NuoNuoSdk.Dtos;
-
-namespace NuoNuoSdk.Requests;
+﻿namespace NuoNuoSdk.Requests;
 
 /// <summary>
 /// 企业发票余量查询接口请求
@@ -36,4 +34,21 @@ public class GetInvoiceStockRequest : NuoNuoRequest
     [JsonProperty("extMachineCodePairs")]
     [JsonPropertyName("extMachineCodePairs")]
     public List<ExtMachineCodeDto> ExtMachineCodePairs { get; set; }
+}
+
+public class ExtMachineCodeDto
+{
+    /// <summary>
+    /// 分机号
+    /// </summary>
+    [JsonProperty("extNum")]
+    [JsonPropertyName("extNum")]
+    public string ExtensionNum { get; set; }
+
+    /// <summary>
+    /// 机器编号
+    /// </summary>
+    [JsonProperty("machineCode")]
+    [JsonPropertyName("machineCode")]
+    public string MachineCode { get; set; }
 }
