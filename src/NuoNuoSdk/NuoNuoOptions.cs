@@ -28,6 +28,11 @@ public class NuoNuoOptions
     public string UserTax { get; set; }
 
     /// <summary>
+    /// 授权码(适用于access_token永不过期的情况,可在创建应用时设置token永不过期)
+    /// </summary>
+    public string AccessToken { get; set; }
+
+    /// <summary>
     /// 超时时间
     /// </summary>
     public int Timeout { get; set; } = 3;

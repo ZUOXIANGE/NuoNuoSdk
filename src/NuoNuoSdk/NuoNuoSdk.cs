@@ -104,11 +104,13 @@ public class NuoNuoSdk : INuoNuoSdk
         where TRequest : NuoNuoRequest
         where TResponse : NuoNuoResponse
     {
+        options ??= _options;
+        if (string.IsNullOrEmpty(request.AccessToken))
+            request.AccessToken = options.AccessToken;
         if (string.IsNullOrEmpty(request.AccessToken))
             throw new ArgumentNullException(nameof(request.AccessToken));
 
         //参数生成
-        options ??= _options;
         var nonce = new Random().Next(10000000, 99999999).ToString();
         var senId = Guid.NewGuid().ToString("N");
         var timestamp = GetTimestamp();
