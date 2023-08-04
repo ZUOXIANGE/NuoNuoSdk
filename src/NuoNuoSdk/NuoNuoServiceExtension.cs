@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.Net;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace NuoNuoSdk;
 
@@ -19,13 +21,18 @@ public static class NuoNuoServiceExtension
         var config = configuration.GetSection(configName);
         serviceBuilder.Configure<NuoNuoOptions>(config);
         serviceBuilder.TryAddSingleton<INuoNuoSdk, NuoNuoSdk>();
-        var timeout = config.GetValue<int>("Timeout");
-        if (timeout < 3)
-            timeout = 3;
 
-        serviceBuilder.AddHttpClient(nameof(NuoNuoSdk), client =>
+        serviceBuilder.AddHttpClient(nameof(NuoNuoSdk), (serviceProvider, client) =>
         {
+            var options = serviceProvider.GetService<IOptions<NuoNuoOptions>>();
+            var timeout = options.Value.Timeout;
+            if (timeout < 3)
+                timeout = 3;
             client.Timeout = TimeSpan.FromSeconds(timeout);
+            client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br");
+        }).ConfigurePrimaryHttpMessageHandler(_ => new HttpClientHandler
+        {
+            AutomaticDecompression = DecompressionMethods.All
         });
         return serviceBuilder;
     }
