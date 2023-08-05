@@ -34,16 +34,25 @@ var stockRes2 = await _nuoNuoSdk.GetInvoiceStockAsync(new GetInvoiceStockRequest
 ```
 具体参数使用方法请参考诺诺官方文档,如果缺少对应的参数模型欢迎自行实现然后PR
 
-### 参数模型生成小技巧
+<details><summary>参数模型生成小技巧</summary>
+<p>
 
-使用ChatGpt帮我们完成
+### 使用ChatGpt帮我们完成
 
-1. 使用咒语
+1. 复制文档内容使用咒语
+
 ![使用咒语](./docs/pic/ai1.png)
 
-2. 得到结果
+3. 得到结果
+
 ![得到结果](./docs/pic/ai2.png)
 
-3. 纠正结果
+4. 纠正结果
+
 ![纠正结果](./docs/pic/ai3.png)
+
+</p>
+</details>
+
+
 
