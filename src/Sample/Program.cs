@@ -12,6 +12,12 @@ builder.Services.AddSwaggerGen();
 //添加诺诺开放平台SDK
 builder.Services.AddNuoNuoSdk(builder.Configuration, "NuoNuo");
 
+//builder.Services.AddNuoNuoSdk(x =>
+//{
+//    x.AccessToken = "123";
+//    x.Timeout = 15;
+//});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
