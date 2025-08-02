@@ -2,6 +2,7 @@
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />
   </Folder>
+  <Project Path="NuoNuoSdk.Tests/NuoNuoSdk.Tests.csproj" />
   <Project Path="NuoNuoSdk/NuoNuoSdk.csproj" />
   <Project Path="Sample/Sample.csproj" />
 </Solution>
