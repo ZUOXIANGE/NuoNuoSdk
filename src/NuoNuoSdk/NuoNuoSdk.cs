@@ -2,7 +2,6 @@ using System.Security.Cryptography;
 using System.Web;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Serialization;
 using NuoNuoSdk.Requests;
 using NuoNuoSdk.Responses;
 
@@ -13,11 +12,12 @@ namespace NuoNuoSdk;
 /// </summary>
 public class NuoNuoSdk : INuoNuoSdk
 {
-    private static readonly JsonSerializerSettings JsonSetting = new()
+    private static readonly JsonSerializerOptions JsonOptions = new()
     {
-        ContractResolver = new CamelCasePropertyNamesContractResolver(),
-        NullValueHandling = NullValueHandling.Ignore,
-        DateFormatString = "yyyy-MM-dd HH:mm:ss"
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        PropertyNameCaseInsensitive = true,
+        Converters = { new DateTimeConverter(), new NullableDateTimeConverter() }
     };
 
     private readonly IHttpClientFactory _clientFactory;
@@ -46,7 +46,7 @@ public class NuoNuoSdk : INuoNuoSdk
             { "grant_type", "client_credentials" }
         };
         var data = await PostFormAsync(dic, options);
-        return JsonConvert.DeserializeObject<MerchantTokenResponse>(data);
+        return JsonSerializer.Deserialize<MerchantTokenResponse>(data, JsonOptions);
     }
 
     /// <summary>
@@ -68,7 +68,7 @@ public class NuoNuoSdk : INuoNuoSdk
             { "grant_type", "authorization_code" }
         };
         var data = await PostFormAsync(dic, options);
-        return JsonConvert.DeserializeObject<IsvTokenResponse>(data);
+        return JsonSerializer.Deserialize<IsvTokenResponse>(data, JsonOptions);
     }
 
     /// <summary>
@@ -88,7 +88,7 @@ public class NuoNuoSdk : INuoNuoSdk
             { "grant_type", "refresh_token" }
         };
         var data = await PostFormAsync(dic, options);
-        return JsonConvert.DeserializeObject<IsvTokenResponse>(data);
+        return JsonSerializer.Deserialize<IsvTokenResponse>(data, JsonOptions);
     }
 
     /// <summary>
@@ -114,7 +114,7 @@ public class NuoNuoSdk : INuoNuoSdk
         var nonce = Random.Shared.Next(10000000, 99999999).ToString();
         var senId = Guid.NewGuid().ToString("N");
         var timestamp = GetTimestamp();
-        var body = JsonConvert.SerializeObject(request, JsonSetting);
+        string body = JsonSerializer.Serialize(request, JsonOptions);
 
         //url拼接
         var url = new StringBuilder(options.SdkRequestUrl);
@@ -155,7 +155,7 @@ public class NuoNuoSdk : INuoNuoSdk
         if (enableLog)
             _logger.LogInformation("诺诺返回:{data}", data);
 
-        var response = JsonConvert.DeserializeObject<TResponse>(data);
+        TResponse response = JsonSerializer.Deserialize<TResponse>(data, JsonOptions);
         response.Body = data;
         return response;
     }

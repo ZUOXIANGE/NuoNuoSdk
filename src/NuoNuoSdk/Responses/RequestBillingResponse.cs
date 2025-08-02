@@ -1,4 +1,4 @@
-﻿namespace NuoNuoSdk.Responses;
+namespace NuoNuoSdk.Responses;
 
 /// <summary>
 /// 请求开具发票响应
@@ -13,6 +13,6 @@ public class RequestBillingDto
     /// <summary>
     /// 发票流水号
     /// </summary>
-    [JsonProperty("invoiceSerialNum")]
+    [JsonPropertyName("invoiceSerialNum")]
     public string InvoiceSerialNum { get; set; }
 }

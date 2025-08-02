@@ -1,5 +1,3 @@
-using Newtonsoft.Json.Serialization;
-
 namespace NuoNuoSdk.Requests;
 
 /// <summary>
@@ -10,22 +8,21 @@ public class NuoNuoRequest
     /// <summary>
     /// 请求api对应的方法名称【消息头】
     /// </summary>
-    [JsonProperty("method")]
     [JsonPropertyName("method")]
     public virtual string Method { get; set; }
 
     /// <summary>
     /// 授权码【消息头】
     /// </summary>
-    [Newtonsoft.Json.JsonIgnore]
-    [System.Text.Json.Serialization.JsonIgnore]
+    [JsonIgnore]
     public string AccessToken { get; set; }
 
-    private static readonly JsonSerializerSettings JsonSetting = new()
+    private static readonly JsonSerializerOptions JsonOptions = new()
     {
-        ContractResolver = new CamelCasePropertyNamesContractResolver(),
-        NullValueHandling = NullValueHandling.Ignore,
-        DateFormatString = "yyyy-MM-dd HH:mm:ss"
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        PropertyNameCaseInsensitive = true,
+        Converters = { new DateTimeConverter(), new NullableDateTimeConverter() }
     };
 
     private Dictionary<string, string> _dic;
@@ -39,8 +36,8 @@ public class NuoNuoRequest
         if (_dic != null)
             return _dic;
 
-        var json = JsonConvert.SerializeObject(this, JsonSetting);
-        _dic = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+        string json = JsonSerializer.Serialize(this, JsonOptions);
+        _dic = JsonSerializer.Deserialize<Dictionary<string, string>>(json, JsonOptions);
         return _dic;
     }
 }
