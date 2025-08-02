@@ -6,90 +6,81 @@ using NuoNuoSdk.Responses;
 namespace Sample.Controllers;
 
 /// <summary>
-/// Test
+/// 诺诺SDK测试控制器
 /// </summary>
 [ApiController]
-[Route("test")]
-public class TestController : ControllerBase
+[Route("api/[controller]")]
+[Produces("application/json")]
+public class TestController(ILogger<TestController> logger, INuoNuoSdk nuoNuoSdk) : ControllerBase
 {
-    private readonly ILogger<TestController> _logger;
-    private readonly INuoNuoSdk _nuoNuoSdk;
+    private readonly ILogger<TestController> _logger = logger;
+    private readonly INuoNuoSdk _nuoNuoSdk = nuoNuoSdk;
 
-    public TestController(ILogger<TestController> logger, INuoNuoSdk nuoNuoSdk)
-    {
-        _logger = logger;
-        _nuoNuoSdk = nuoNuoSdk;
-    }
-
+    /// <summary>
+    /// 健康检查接口
+    /// </summary>
+    /// <returns>返回pong表示服务正常</returns>
     [HttpGet("ping")]
-    public string Ping() => "pong";
+    public IActionResult Ping() => Ok(new { message = "pong", timestamp = DateTimeOffset.UtcNow });
 
+    /// <summary>
+    /// 诺诺SDK完整流程测试
+    /// </summary>
+    /// <returns>测试结果</returns>
     [HttpGet("nuonuo")]
-    public async Task<string> Nuonuo()
+    public async Task<IActionResult> NuoNuoTestAsync()
     {
-        //��ȡtoken,����token��Ч������ά������
-        var token = await _nuoNuoSdk.GetMerchantTokenAsync();
-        _logger.LogInformation("��ȡtoken:{token}", token);
-        //var token = new MerchantTokenResponse
-        //{
-        //    AccessToken = ""
-        //};
+        try
+        {
+            // 获取token，如果token有效期长，建议维护缓存
+            var token = await _nuoNuoSdk.GetMerchantTokenAsync();
+            _logger.LogInformation("获取token成功: {AccessToken}", token.AccessToken?[..10] + "...");
 
-        //��ѯ��Ʊ
-        var stockRes = await _nuoNuoSdk.ExecuteAsync<GetInvoiceStockRequest, GetInvoiceStockResponse>(new GetInvoiceStockRequest
-        {
-            AccessToken = token.AccessToken
-        });
-        //ʹ��Ĭ�Ͻӿ�ʵ��
-        var stockRes2 = await _nuoNuoSdk.GetInvoiceStockAsync(new GetInvoiceStockRequest
-        {
-            AccessToken = token.AccessToken
-        });
-        _logger.LogInformation("��ѯ��Ʊ:{body} {body2}", stockRes.Body, stockRes2.Body);
-
-        //��Ʊ
-        var billingRes = await _nuoNuoSdk.ExecuteAsync<RequestBillingRequest, RequestBillingResponse>(new RequestBillingRequest
-        {
-            AccessToken = token.AccessToken,
-            Order = new OrderDto
+            if (!token.Success)
             {
-                BuyerTaxNum = "6876413SAFDG"
+                return BadRequest(new { error = "获取token失败", details = token.ErrorDescription });
             }
-        });
-        _logger.LogInformation("��Ʊ:{body}", billingRes.Body);
 
-        //��ѯ
-        var invoiceRes = await _nuoNuoSdk.ExecuteAsync<QueryInvoiceResultRequest, QueryInvoiceResultResponse>(new QueryInvoiceResultRequest
+            // 查询发票余量
+            var stockRes = await _nuoNuoSdk.GetInvoiceStockAsync(new GetInvoiceStockRequest
+            {
+                AccessToken = token.AccessToken
+            });
+            _logger.LogInformation("查询发票余量: {Success}", stockRes.Success);
+
+            if (!stockRes.Success)
+            {
+                return BadRequest(new { error = "查询发票余量失败", details = stockRes.Describe });
+            }
+
+            // 示例：开票请求（注意：这里使用测试数据，实际使用时需要真实数据）
+            var billingRes = await _nuoNuoSdk.RequestBillingRequest(new RequestBillingRequest
+            {
+                AccessToken = token.AccessToken,
+                Order = new OrderDto
+                {
+                    BuyerTaxNum = "TEST123456789" // 测试税号
+                }
+            });
+            _logger.LogInformation("开票请求: {Success}", billingRes.Success);
+
+            return Ok(new
+            {
+                message = "测试完成",
+                results = new
+                {
+                    tokenSuccess = token.Success,
+                    stockSuccess = stockRes.Success,
+                    billingSuccess = billingRes.Success,
+                    timestamp = DateTimeOffset.UtcNow
+                }
+            });
+        }
+        catch (Exception ex)
         {
-            AccessToken = token.AccessToken,
-            SerialNos = new List<string> { billingRes.Result.InvoiceSerialNum }
-        });
-        _logger.LogInformation("��ѯ��Ʊ:{body}", invoiceRes.Body);
-
-        var r = invoiceRes.Result.First();
-        //�ط�
-        var deliveryInvoiceRes = await _nuoNuoSdk.ExecuteAsync<DeliveryInvoiceRequest, NuoNuoResponse>(new DeliveryInvoiceRequest
-        {
-            AccessToken = token.AccessToken,
-            InvoiceCode = r.InvoiceCode,
-            InvoiceNumber = r.InvoiceNo,
-            TaxNumber = r.SalerTaxNum,
-            Mail = "zuoxiang42@gmail.com",
-            Phone = ""
-        });
-        _logger.LogInformation("�ط���Ʊ:{body}", deliveryInvoiceRes.Body);
-
-        //����
-        var cancellationRes = await _nuoNuoSdk.ExecuteAsync<InvoiceCancellationRequest, InvoiceCancellationResponse>(new InvoiceCancellationRequest
-        {
-            AccessToken = token.AccessToken,
-            InvoiceId = billingRes.Result.InvoiceSerialNum,
-            InvoiceCode = r.InvoiceCode,
-            InvoiceNo = r.InvoiceNo
-        });
-        _logger.LogInformation("��Ʊ����:{body}", cancellationRes.Body);
-
-        return "�������";
+            _logger.LogError(ex, "诺诺SDK测试过程中发生异常");
+            return StatusCode(500, new { error = "测试过程中发生异常", details = ex.Message });
+        }
     }
 
 }

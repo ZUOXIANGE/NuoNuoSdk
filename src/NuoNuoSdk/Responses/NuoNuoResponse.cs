@@ -1,4 +1,4 @@
-﻿namespace NuoNuoSdk.Responses;
+namespace NuoNuoSdk.Responses;
 
 /// <summary>
 /// 诺诺响应基类
@@ -10,7 +10,7 @@ public class NuoNuoResponse
     /// </summary>
     [System.Text.Json.Serialization.JsonIgnore]
     [Newtonsoft.Json.JsonIgnore]
-    public bool Success => "E0000" == Code;
+    public bool Success => Code == "E0000";
 
     /// <summary>
     /// 原始响应body

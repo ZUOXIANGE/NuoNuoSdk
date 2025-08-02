@@ -1,4 +1,4 @@
-﻿using System.Security.Cryptography;
+using System.Security.Cryptography;
 using System.Web;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -111,7 +111,7 @@ public class NuoNuoSdk : INuoNuoSdk
             throw new ArgumentNullException(nameof(request.AccessToken));
 
         //参数生成
-        var nonce = new Random().Next(10000000, 99999999).ToString();
+        var nonce = Random.Shared.Next(10000000, 99999999).ToString();
         var senId = Guid.NewGuid().ToString("N");
         var timestamp = GetTimestamp();
         var body = JsonConvert.SerializeObject(request, JsonSetting);
@@ -183,16 +183,13 @@ public class NuoNuoSdk : INuoNuoSdk
         return data;
     }
 
-    private static readonly DateTime Time1970 = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
     /// <summary>
     /// 获取时间戳
     /// </summary>
     /// <returns></returns>
     private static string GetTimestamp()
     {
-        var ts = DateTime.UtcNow - Time1970;
-        return Convert.ToInt64(ts.TotalSeconds).ToString();
+        return DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString();
     }
 
     /// <summary>
@@ -228,13 +225,10 @@ public class NuoNuoSdk : INuoNuoSdk
     /// <returns></returns>
     private static string HmacSha1WithBase64(string value, string secret)
     {
-        var encoding = Encoding.UTF8;
-        var keyBytes = encoding.GetBytes(secret);
-        var hmacSha1 = new HMACSHA1(keyBytes);
-        var messageBytes = encoding.GetBytes(value);
-        var rawHmac = hmacSha1.ComputeHash(messageBytes);
-        var res = Convert.ToBase64String(rawHmac);
-        return res;
+        var keyBytes = Encoding.UTF8.GetBytes(secret);
+        var messageBytes = Encoding.UTF8.GetBytes(value);
+        var rawHmac = HMACSHA1.HashData(keyBytes, messageBytes);
+        return Convert.ToBase64String(rawHmac);
     }
 
     #endregion

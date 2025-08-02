@@ -1,58 +1,153 @@
-# NuoNuoSdk [![NuoNuoOpenSdk](https://img.shields.io/nuget/v/NuoNuoOpenSdk.svg)](https://www.nuget.org/packages/NuoNuoOpenSdk/)[![NuoNuoOpenSdk](https://img.shields.io/nuget/dt/NuoNuoOpenSdk.svg)](https://www.nuget.org/packages/NuoNuoOpenSdk/)
+# NuoNuoSdk [![NuoNuoOpenSdk](https://img.shields.io/nuget/v/NuoNuoOpenSdk.svg)](https://www.nuget.org/packages/NuoNuoOpenSdk/) [![NuoNuoOpenSdk](https://img.shields.io/nuget/dt/NuoNuoOpenSdk.svg)](https://www.nuget.org/packages/NuoNuoOpenSdk/)
 
-[诺诺开放平台](https://open.jss.com.cn/)SDK
+[诺诺开放平台](https://open.jss.com.cn/)SDK - 支持 .NET 6/7/8/9
 
-相较于官方其他语言的SDK优点是使用了模型参数,开箱即用
+## ✨ 特性
 
-## 安装
+- 🚀 **开箱即用**：使用强类型模型参数，无需手动拼接参数
+- 🎯 **多版本支持**：支持 .NET 6、.NET 7、.NET 8、.NET 9
+- 🔧 **依赖注入**：完美集成 ASP.NET Core 依赖注入容器
+- 📝 **完整文档**：提供详细的 XML 文档注释
+- 🛡️ **类型安全**：强类型请求和响应模型
+- ⚡ **高性能**：使用最新的 .NET 特性优化性能
 
-```
+## 📦 安装
+
+```bash
 dotnet add package NuoNuoOpenSdk
 ```
 
-## 使用示例
+## 🚀 快速开始
 
-``` csharp
+### 1. 配置服务
 
-//添加诺诺开放平台SDK
+```csharp
+// 方式一：从配置文件读取
 builder.Services.AddNuoNuoSdk(builder.Configuration, "NuoNuo");
 
-//获取token,根据token有效期自行维护缓存
-var token = await _nuoNuoSdk.GetMerchantToken();
-
- //查询余票
-var stockRes = await _nuoNuoSdk.ExecuteAsync<GetInvoiceStockRequest, GetInvoiceStockResponse>(new GetInvoiceStockRequest
+// 方式二：直接配置
+builder.Services.AddNuoNuoSdk(options =>
 {
-    AccessToken = token.AccessToken
+    options.AppKey = "your_app_key";
+    options.AppSecret = "your_app_secret";
+    options.UserTax = "your_user_tax";
+    options.AccessToken = "your_access_token"; // 可选
+    options.Timeout = 30; // 超时时间（秒）
 });
-//使用默认接口实现
-var stockRes2 = await _nuoNuoSdk.GetInvoiceStockAsync(new GetInvoiceStockRequest
-{
-    AccessToken = token.AccessToken
-});
-
 ```
-具体参数使用方法请参考诺诺官方文档,如果缺少对应的参数模型欢迎自行实现然后PR
 
-<details><summary>参数模型生成小技巧</summary>
-<p>
+### 2. 配置文件示例 (appsettings.json)
 
-### 使用ChatGpt帮我们完成
+```json
+{
+  "NuoNuo": {
+    "AppKey": "your_app_key",
+    "AppSecret": "your_app_secret",
+    "UserTax": "your_user_tax",
+    "AccessToken": "your_access_token",
+    "Timeout": 30
+  }
+}
+```
 
-1. 复制文档内容使用咒语
+### 3. 使用示例
 
-![使用咒语](./docs/pic/ai1.png)
+```csharp
+public class InvoiceController : ControllerBase
+{
+    private readonly INuoNuoSdk _nuoNuoSdk;
+    
+    public InvoiceController(INuoNuoSdk nuoNuoSdk)
+    {
+        _nuoNuoSdk = nuoNuoSdk;
+    }
+    
+    [HttpGet("token")]
+    public async Task<IActionResult> GetToken()
+    {
+        // 获取访问令牌
+        var token = await _nuoNuoSdk.GetMerchantTokenAsync();
+        return Ok(token);
+    }
+    
+    [HttpGet("stock")]
+    public async Task<IActionResult> GetInvoiceStock()
+    {
+        // 查询发票余量
+        var stockRes = await _nuoNuoSdk.GetInvoiceStockAsync(new GetInvoiceStockRequest
+        {
+            // AccessToken 会自动从配置中获取，也可以手动指定
+        });
+        return Ok(stockRes);
+    }
+    
+    [HttpPost("billing")]
+    public async Task<IActionResult> RequestBilling([FromBody] RequestBillingRequest request)
+    {
+        // 请求开具发票
+        var result = await _nuoNuoSdk.RequestBillingRequest(request);
+        return Ok(result);
+    }
+}
+```
 
-3. 得到结果
+## 📋 支持的API
 
-![得到结果](./docs/pic/ai2.png)
+- ✅ 获取访问令牌 (`GetMerchantTokenAsync`)
+- ✅ ISV获取访问令牌 (`GetIsvTokenAsync`)
+- ✅ ISV刷新访问令牌 (`RefreshIsvTokenAsync`)
+- ✅ 企业发票余量查询 (`GetInvoiceStockAsync`)
+- ✅ 请求开具发票 (`RequestBillingRequest`)
+- ✅ 开票结果查询 (`QueryInvoiceResultAsync`)
+- ✅ 开票重试 (`ReInvoiceAsync`)
+- ✅ 发票重新交付 (`DeliveryInvoiceAsync`)
+- ✅ 发票作废 (`InvoiceCancellationAsync`)
 
-4. 纠正结果
+## 🔧 高级用法
 
-![纠正结果](./docs/pic/ai3.png)
+### 自定义HTTP客户端配置
 
-</p>
-</details>
+```csharp
+builder.Services.AddNuoNuoSdk(builder.Configuration)
+    .ConfigureHttpClient(client =>
+    {
+        client.Timeout = TimeSpan.FromSeconds(60);
+        // 其他自定义配置
+    });
+```
 
+### 错误处理
 
+```csharp
+try
+{
+    var result = await _nuoNuoSdk.GetInvoiceStockAsync(request);
+    if (result.Success)
+    {
+        // 处理成功结果
+        Console.WriteLine($"库存查询成功: {result.Result}");
+    }
+    else
+    {
+        // 处理业务错误
+        Console.WriteLine($"业务错误: {result.Code} - {result.Describe}");
+    }
+}
+catch (HttpRequestException ex)
+{
+    // 处理网络错误
+    Console.WriteLine($"网络错误: {ex.Message}");
+}
+```
 
+## 📄 许可证
+
+MIT License - 详见 [LICENSE](LICENSE) 文件
+
+## 🤝 贡献
+
+欢迎提交 Issue 和 Pull Request！
+
+## 📞 支持
+
+如有问题，请访问 [诺诺开放平台官方文档](https://open.jss.com.cn/) 或提交 Issue。

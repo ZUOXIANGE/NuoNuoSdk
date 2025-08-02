@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -24,10 +24,8 @@ public static class NuoNuoServiceExtension
 
         serviceBuilder.AddHttpClient(nameof(NuoNuoSdk), (serviceProvider, client) =>
         {
-            var options = serviceProvider.GetService<IOptions<NuoNuoOptions>>();
-            var timeout = options.Value.Timeout;
-            if (timeout < 3)
-                timeout = 3;
+            var options = serviceProvider.GetRequiredService<IOptions<NuoNuoOptions>>();
+            var timeout = Math.Max(options.Value.Timeout, 3);
             client.Timeout = TimeSpan.FromSeconds(timeout);
             client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br");
         }).ConfigurePrimaryHttpMessageHandler(_ => new HttpClientHandler
@@ -51,10 +49,8 @@ public static class NuoNuoServiceExtension
 
         serviceBuilder.AddHttpClient(nameof(NuoNuoSdk), (serviceProvider, client) =>
         {
-            var options = serviceProvider.GetService<IOptions<NuoNuoOptions>>();
-            var timeout = options.Value.Timeout;
-            if (timeout < 3)
-                timeout = 3;
+            var options = serviceProvider.GetRequiredService<IOptions<NuoNuoOptions>>();
+            var timeout = Math.Max(options.Value.Timeout, 3);
             client.Timeout = TimeSpan.FromSeconds(timeout);
             client.DefaultRequestHeaders.Add("Accept-Encoding", "gzip, deflate, br");
         }).ConfigurePrimaryHttpMessageHandler(_ => new HttpClientHandler
