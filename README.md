@@ -1,11 +1,11 @@
 # NuoNuoSdk [![NuoNuoOpenSdk](https://img.shields.io/nuget/v/NuoNuoOpenSdk.svg)](https://www.nuget.org/packages/NuoNuoOpenSdk/) [![NuoNuoOpenSdk](https://img.shields.io/nuget/dt/NuoNuoOpenSdk.svg)](https://www.nuget.org/packages/NuoNuoOpenSdk/)
 
-[诺诺开放平台](https://open.jss.com.cn/)SDK - 支持 .NET 6/7/8/9
+[诺诺开放平台](https://open.jss.com.cn/)SDK - 支持 .NET 8/9/10
 
 ## ✨ 特性
 
 - 🚀 **开箱即用**：使用强类型模型参数，无需手动拼接参数
-- 🎯 **多版本支持**：支持 .NET 6、.NET 7、.NET 8、.NET 9
+- 🎯 **多版本支持**：.NET 8、.NET 9、.NET 10
 - 🔧 **依赖注入**：完美集成 ASP.NET Core 依赖注入容器
 - 📝 **完整文档**：提供详细的 XML 文档注释
 - 🛡️ **类型安全**：强类型请求和响应模型
