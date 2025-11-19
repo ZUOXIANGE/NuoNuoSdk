@@ -60,15 +60,21 @@ jobs:
             src/NuoNuoSdk/nupkgs/*.snupkg
 
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: ncipollo/release-action@v1
         with:
-          tag_name: ${{ github.ref_name }}
+          tag: ${{ github.ref_name }}
           name: NuoNuoOpenSdk v${{ env.VERSION }}
-          files: |
+          artifacts: |
             artifacts/nuget/*.nupkg
             artifacts/nuget/*.snupkg
             src/NuoNuoSdk/nupkgs/*.nupkg
             src/NuoNuoSdk/nupkgs/*.snupkg
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          replacesArtifacts: true
+          generateReleaseNotes: true
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
 
       - name: Publish to NuGet.org
         if: ${{ env.NUGET_API_KEY != '' }}
