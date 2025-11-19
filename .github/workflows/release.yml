@@ -28,11 +28,13 @@ jobs:
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
 
       - name: Restore
-        run: dotnet restore
+        run: dotnet restore src/NuoNuoSdk/NuoNuoSdk.csproj
 
       - name: Build and Pack
         run: |
           dotnet pack src/NuoNuoSdk/NuoNuoSdk.csproj -c Release -p:Version=${{ env.VERSION }} -p:IsPackable=true -o artifacts/nuget
+          ls -la artifacts/nuget || true
+          ls -la src/NuoNuoSdk/nupkgs || true
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -41,6 +43,8 @@ jobs:
           path: |
             artifacts/nuget/*.nupkg
             artifacts/nuget/*.snupkg
+            src/NuoNuoSdk/nupkgs/*.nupkg
+            src/NuoNuoSdk/nupkgs/*.snupkg
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -50,10 +54,15 @@ jobs:
           files: |
             artifacts/nuget/*.nupkg
             artifacts/nuget/*.snupkg
+            src/NuoNuoSdk/nupkgs/*.nupkg
+            src/NuoNuoSdk/nupkgs/*.snupkg
 
       - name: Publish to NuGet.org
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+        if: ${{ secrets.NUGET_API_KEY != '' }}
         run: |
           dotnet nuget push artifacts/nuget/*.nupkg --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY" --skip-duplicate
           dotnet nuget push artifacts/nuget/*.snupkg --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY" --skip-duplicate
+          dotnet nuget push src/NuoNuoSdk/nupkgs/*.nupkg --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY" --skip-duplicate || true
+          dotnet nuget push src/NuoNuoSdk/nupkgs/*.snupkg --source https://api.nuget.org/v3/index.json --api-key "$NUGET_API_KEY" --skip-duplicate || true
