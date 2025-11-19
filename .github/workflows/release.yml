@@ -23,6 +23,12 @@ jobs:
           dotnet-version: '10.0.x'
           cache: false
 
+      - name: Dotnet Info
+        run: |
+          dotnet --info
+          dotnet --list-sdks
+          dotnet --list-runtimes
+
       - name: Compute version from tag
         shell: bash
         run: |
@@ -32,9 +38,14 @@ jobs:
       - name: Restore
         run: dotnet restore src/NuoNuoSdk/NuoNuoSdk.csproj
 
-      - name: Build and Pack
+      - name: Build
         run: |
-          dotnet pack src/NuoNuoSdk/NuoNuoSdk.csproj -c Release -p:Version=${{ env.VERSION }} -p:IsPackable=true -o artifacts/nuget
+          dotnet build src/NuoNuoSdk/NuoNuoSdk.csproj -c Release
+          ls -la src/NuoNuoSdk/bin/Release || true
+
+      - name: Pack
+        run: |
+          dotnet pack src/NuoNuoSdk/NuoNuoSdk.csproj -c Release -p:Version=${{ env.VERSION }} -p:IsPackable=true --no-build -o artifacts/nuget
           ls -la artifacts/nuget || true
           ls -la src/NuoNuoSdk/nupkgs || true
 
